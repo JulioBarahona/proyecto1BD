@@ -1,7 +1,9 @@
 grammar gramaticaProyecto;
-
+// Julio Barahona
+// Tomando como referencia el sigueinte link: https://tomassetti.me/antlr-mega-tutorial/
 /*
  * Definiciones de Lexer
+ * da las varibales
  */
 
 //letras individuales definidas para ser  reconocidas tanto en minuscula como mayuscula
@@ -74,6 +76,7 @@ RES_AND : A N D;
 RES_OR : O R;
 RES_NOT : N O T;
 //pendiete como hacer < , <= , > , >= , <> , =
+//probablemente en java ¯\_(ツ)_/¯
 
 //vii ya estan todas definidas antes
 
@@ -143,6 +146,26 @@ INT: DIGIT ( DIGIT )*;
 DATE: '\'' YEAR'-'MONTH'-'DAY  '\'';
 CHAR : '\'' ASCII(ASCII)* '\'' ;
 
-//caracteres a ignorar en el stream
+//caracteres a ignorar en el stream ya que no son ni reservados ni utiles
 WHITESPACE : [\t\r\n\f ]+ -> skip ;
 COMMENT : ( '//' ~[\r\n]* '\r'? '\n' | '/*' .*? '*/' ) -> skip ;
+
+
+
+/*
+ * Definiciones de Parser
+ * usa las variables...(de alguna forma) leer linea 3
+ */
+
+
+//numero con negativo opcional
+int_literal: ('-')? INT;
+
+//float usa a veces negatios y a veces punto pero si numeros en medio de signo y punto y
+float_literal: ('-')? INT ('.' INT )?;
+
+//usa le fecha definida
+date_literal: DATE ;
+
+//letras y palanras definidas
+char_literal: CHAR;
