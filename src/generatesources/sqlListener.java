@@ -1,4 +1,4 @@
-// Generated from sql.g4 by ANTLR 4.4
+// Generated from gramaticaProyecto.g4 by ANTLR 4.4
 package generatedsources;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
