@@ -77,6 +77,7 @@ RES_OR : O R;
 RES_NOT : N O T;
 //pendiete como hacer < , <= , > , >= , <> , =
 //probablemente en java ¯\_(ツ)_/¯
+//se logró en parser V,: AIUDAAAAA!
 
 //vii ya estan todas definidas antes
 
@@ -156,7 +157,102 @@ COMMENT : ( '//' ~[\r\n]* '\r'? '\n' | '/*' .*? '*/' ) -> skip ;
  * Definiciones de Parser
  * usa las variables...(de alguna forma) leer linea 3
  */
+//
+sql2003Parser : ( sql_executable_statement )+ ;
 
+sql_executable_statement : sql_schema_statement | sql_data_statement ;
+
+sql_schema_statement : sql_schema_definition_statement | sql_schema_manipulation_statement ;
+
+sql_schema_definition_statement : schema_definition | table_definition ;
+
+sql_schema_manipulation_statement : 	drop_schema_statement   |   alter_table_statement    |
+	                                    drop_table_statement    |   alter_database_statement|
+	                                    use_schema_statement    |   show_schema_statement|
+	                                    rename_table_statement  |   show_table_statement|
+	                                    show_column_statement ;
+
+sql_data_statement :    select_value    |   insert_value    |
+                        delete_value    |   update_value;
+
+schema_definition: CREATE DATABASE ID ';' ;
+
+table_definition: CREATE TABLE ID '(' column (',' column)* ')' ';' ;
+
+drop_schema_statement: DROP DATABASE ID ';' ;
+
+alter_table_statement: ALTER TABLE idTable ADD COLUMN idColumn tipo_literal (constraint)? ';' #alterAddColumn
+					 | ALTER TABLE idTable ADD constraint ';' #alterAddConstraint
+					 | ALTER TABLE idTable DROP COLUMN idColumn ';' #alterDropColumn
+					 | ALTER TABLE idTable DROP CONSTRAINT idConstraint ';' #alterDropConstraint;
+idTable: ID;
+
+idColumn: ID;
+
+idConstraint: ID;
+
+drop_table_statement: DROP TABLE ID ';' ;
+
+alter_database_statement: ALTER DATABASE ID RENAME TO ID ';' ;
+
+show_schema_statement: SHOW DATABASES ';' ;
+
+use_schema_statement: USE DATABASE ID ';' ;
+
+column: ID tipo_literal #column_literal
+		| constraint #column_constraint;
+
+tipo_literal: RES_INT #tipo_lit_int
+			| RES_FLOAT #tipo_lit_float
+			| (RES_CHAR '('INT ')') #tipo_lit_char
+			| RES_DATE #tipo_lit_date;
+constraint: CONSTRAINT constraintType ;
+constraintType:
+            ID PRIMARY KEY '(' localIDS ')' #constraintTypePrimaryKey
+        |   ID FOREIGN KEY  '(' localIDS ')' REFERENCES idRef '(' refIDS ')' #constraintTypeForeignKey
+        |   ID CHECK '('condition ')' #constraintTypeCheck;
+idRef: ID;
+localIDS: ID
+		  | ID ',' localIDS;
+refIDS: ID
+		| ID ',' refIDS;
+exp: logic #exp_logic
+	 | logic_not #exp_logic_not
+	 | relational #exp_relational;
+rename_table_statement: ALTER TABLE ID RENAME TO ID ';' ;
+show_table_statement: SHOW TABLES ';' ;
+show_column_statement: SHOW COLUMNS FROM ID ';' ;
+logic: RES_AND #logic_and
+	   | RES_OR #logic_or;
+logic_not: RES_NOT;
+relational: '<' | '<=' | '>' | '>=' | '<>' | '=' ;
+insert_value: INSERT INTO ID (columns)? VALUES list ';' ;
+update_value: UPDATE ID SET asignacion (WHERE condition)? ';' ;
+asignacion : columna '=' literal (',' columna '=' literal)*;
+delete_value: DELETE FROM ID (WHERE condition)? ';' ;
+select_value: SELECT ('*' | nlocalIDS ) FROM localIDS (WHERE condition)?  ( ORDER BY order )? ';' ;
+nID: ID
+	|ID '.' ID;
+nlocalIDS: nID
+		  | nID ',' nlocalIDS;
+order: nID ( ASC | DESC )? #orderUni
+	| nID (ASC | DESC )? ',' order #orderMulti;
+condition: '(' condition ')' (logic condition)? #conditionCond
+                 | comp (logic condition)? #conditionComp
+                 | logic_not condition #conditionNot;
+comp : nID relational (nID | literal) #compId
+	   | literal relational nID #compLitId
+	   | literal relational literal #compLit;
+columns: (columna ( ',' columna)* | ('(' columna (','columna)* ')')) ;
+columna: ID;
+list : (literal (',' literal)* )
+			|  '(' (literal (',' literal)* ) ')';
+literal:
+        int_literal
+    |   float_literal
+    |   date_literal
+    |   char_literal
+    |   NULL ;
 
 //numero con negativo opcional
 int_literal: ('-')? INT;
