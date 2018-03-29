@@ -129,7 +129,7 @@ fragment LETTER : ('a'..'z'|'A'..'Z') ;
 fragment DIGIT :'0'..'9' ;
 
 //caracteres especiales
-fragment ASCII : (' '..'&')('('..'~')| DIGIT | LETTER  | '\\' |'\"' | '\t' | '\n' | '.';
+fragment ASCII : (' '..'&')('('..'~')| DIGIT | LETTER  | '\\' | '\"' | '\t' | '\n' | '.';
 
 //secuencuas de numeros aceptados
 fragment TWO_DIGITS : DIGIT DIGIT ;
