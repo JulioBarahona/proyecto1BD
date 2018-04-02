@@ -50,7 +50,7 @@ public class LineNumberTableRowHeader extends JComponent {
             size.height = viewSize.height;
             setSize(size);
             setPreferredSize(size);
-        }
+    	}
 
         super.paintComponent(g);
 
